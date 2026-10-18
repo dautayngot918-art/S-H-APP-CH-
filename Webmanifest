@@ -1,0 +1,31 @@
+{
+  "name": "Phần mềm quản lý- theo dõi nghiên cứu - App chủ",
+  "short_name": "Theo dõi NC - Chủ",
+  "lang": "vi",
+  "start_url": "./app-chu-quan-tri.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
+  "description": "Quản lý, theo dõi tiến độ đề tài nghiên cứu và bài báo khoa học",
+  "icons": [
+    {
+      "src": "icons/app-chu-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/app-chu-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/app-chu-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
