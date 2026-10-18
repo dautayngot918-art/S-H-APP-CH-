@@ -109,7 +109,7 @@
         @media (max-width: 640px) { .app-title-l1 { font-size: 1rem; letter-spacing: 0.12em; } .app-title-l2 { font-size: 1.12rem; } }
         @media (max-width: 420px) { .app-title-tag { display: none; } }
         .sum-jump a { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; border-radius: 9999px; background: #fff; border: 1px solid #bfdbfe; color: #1e3a8a; font-size: 0.8rem; font-weight: 600; }
-        #allItemsPanel tbody td:nth-child(3) { min-width: 13rem; }
+        .all-items-panel tbody td:nth-child(3) { min-width: 13rem; }
         .stage-click:hover { background: #eff6ff; }
         .sub-table tbody td:nth-child(2) { min-width: 13rem; }
         .sum-jump a:hover { background: #e8f1ff; }
@@ -402,14 +402,27 @@
         </div>
         <div id="detailFacetSlot" class="facet-slot no-print"></div>
         <div id="detailResultSlot" class="no-print"></div>
-        <div id="allItemsPanel" class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div id="allItemsPanel" class="all-items-panel bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden border-t-4 border-t-blue-500">
+            <div class="px-5 py-3 flex items-center gap-2 border-b border-slate-100"><i class="fa-solid fa-flask text-blue-600"></i><h3 class="section-title text-blue-800">Danh sách đề tài <span id="allProjectCount" class="text-slate-400 font-normal text-sm"></span></h3></div>
             <div class="overflow-x-auto hdr-scroll">
-                <table id="allItemsTableEl" class="freeze-3 w-full text-left border-collapse">
+                <table id="allItemsTableEl" class="hide-kind freeze-3 w-full text-left border-collapse">
                     <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
                         <th class="py-3 px-4 text-center">STT</th><th class="col-kind py-3 px-4">Loại</th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Tên</span><button type="button" data-picker="aname" onclick="openColPicker(event, 'aname')" title="Tìm tên đề tài / bài báo" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Tài khoản</span><button type="button" data-picker="aowner" onclick="openColPicker(event, 'aowner')" title="Tìm tài khoản" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Khoa</span><button type="button" data-picker="adept" onclick="openColPicker(event, 'adept')" title="Tìm khoa" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th>
                         <th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Giai đoạn / Trạng thái</span><button type="button" data-picker="astage" onclick="openColPicker(event, 'astage')" title="Lọc giai đoạn / trạng thái" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4 whitespace-nowrap"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Ngày bắt đầu</span><button type="button" data-picker="astart" onclick="openColPicker(event, 'astart')" title="Lọc theo khoảng ngày (từ ... đến ...)" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-calendar-days text-[13px]"></i></button></div></th><th class="py-3 px-4 whitespace-nowrap"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Hạn chót</span><button type="button" data-picker="adeadline" onclick="openColPicker(event, 'adeadline')" title="Lọc theo khoảng ngày (từ ... đến ...)" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-calendar-days text-[13px]"></i></button></div></th><th class="py-3 px-4 whitespace-nowrap"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Ngày hoàn thành</span><button type="button" data-picker="aend" onclick="openColPicker(event, 'aend')" title="Lọc theo khoảng ngày (từ ... đến ...)" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-calendar-days text-[13px]"></i></button></div></th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Tình trạng</span><button type="button" data-picker="astatus" onclick="openColPicker(event, 'astatus')" title="Lọc tình trạng" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4">Minh chứng</th>
                     </tr></thead>
                     <tbody id="allItemsTable" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="allArticlesPanel" class="all-items-panel bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden border-t-4 border-t-indigo-500">
+            <div class="px-5 py-3 flex items-center gap-2 border-b border-slate-100"><i class="fa-solid fa-newspaper text-indigo-600"></i><h3 class="section-title text-indigo-800">Danh sách bài báo <span id="allArticleCount" class="text-slate-400 font-normal text-sm"></span></h3></div>
+            <div class="overflow-x-auto hdr-scroll">
+                <table id="allArticlesTableEl" class="hide-kind freeze-3 w-full text-left border-collapse">
+                    <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                        <th class="py-3 px-4 text-center">STT</th><th class="col-kind py-3 px-4">Loại</th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Tên</span><button type="button" data-picker="aname" onclick="openColPicker(event, 'aname')" title="Tìm tên đề tài / bài báo" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Tài khoản</span><button type="button" data-picker="aowner" onclick="openColPicker(event, 'aowner')" title="Tìm tài khoản" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Khoa</span><button type="button" data-picker="adept" onclick="openColPicker(event, 'adept')" title="Tìm khoa" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th>
+                        <th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Giai đoạn / Trạng thái</span><button type="button" data-picker="astage" onclick="openColPicker(event, 'astage')" title="Lọc giai đoạn / trạng thái" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4 whitespace-nowrap"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Ngày bắt đầu</span><button type="button" data-picker="astart" onclick="openColPicker(event, 'astart')" title="Lọc theo khoảng ngày (từ ... đến ...)" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-calendar-days text-[13px]"></i></button></div></th><th class="py-3 px-4 whitespace-nowrap"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Hạn chót</span><button type="button" data-picker="adeadline" onclick="openColPicker(event, 'adeadline')" title="Lọc theo khoảng ngày (từ ... đến ...)" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-calendar-days text-[13px]"></i></button></div></th><th class="py-3 px-4 whitespace-nowrap"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Ngày hoàn thành</span><button type="button" data-picker="aend" onclick="openColPicker(event, 'aend')" title="Lọc theo khoảng ngày (từ ... đến ...)" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-calendar-days text-[13px]"></i></button></div></th><th class="py-3 px-4"><div class="th-filter flex items-center justify-between gap-2"><span class="th-label">Tình trạng</span><button type="button" data-picker="astatus" onclick="openColPicker(event, 'astatus')" title="Lọc tình trạng" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button></div></th><th class="py-3 px-4">Minh chứng</th>
+                    </tr></thead>
+                    <tbody id="allArticlesTable" class="divide-y divide-slate-100 text-sm"></tbody>
                 </table>
             </div>
         </div>
@@ -2268,7 +2281,7 @@
                     : (c === 'blue' ? 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700' : 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700')}`;
             });
 
-            document.getElementById('allItemsTable').innerHTML = items.map((i, idx) => `
+            const rowHtml = (i, idx) => `
                 <tr class="hover:bg-slate-50/80 ${isDoneItem(i) ? 'row-done' : ''}">
                     <td class="py-3 px-4 text-center text-slate-500">${idx + 1}</td>
                     <td class="col-kind py-3 px-4"><span class="text-xs px-2 py-0.5 rounded ${i.kind === 'article' ? 'bg-indigo-50 text-indigo-700' : 'bg-blue-50 text-blue-700'}">${i.kind === 'article' ? 'Bài báo' : 'Đề tài'}</span></td>
@@ -2281,10 +2294,17 @@
                     <td class="py-3 px-4 text-slate-600 whitespace-nowrap">${nrtEscape(i.endDate || '-')}</td>
                     <td class="py-3 px-4 whitespace-nowrap">${riskBadge(i)}</td>
                     <td class="py-3 px-4">${proofBadge(i, i.owner.username)}</td>
-                </tr>`).join('') || '<tr><td colspan="11" class="py-6 text-center text-slate-400">Không có dữ liệu.</td></tr>';
+                </tr>`;
+            // Tách riêng bảng đề tài và bảng bài báo; đang lọc một loại thì ẩn bảng còn lại
+            const empty = '<tr><td colspan="11" class="py-6 text-center text-slate-400">Không có dữ liệu.</td></tr>';
+            const projects = items.filter(i => i.kind !== 'article'), articles = items.filter(i => i.kind === 'article');
+            document.getElementById('allItemsTable').innerHTML = projects.map(rowHtml).join('') || empty;
+            document.getElementById('allArticlesTable').innerHTML = articles.map(rowHtml).join('') || empty;
+            document.getElementById('allProjectCount').innerText = `(${projects.length})`;
+            document.getElementById('allArticleCount').innerText = `(${articles.length})`;
+            document.getElementById('allItemsPanel').classList.toggle('hidden', allKind === 'article');
+            document.getElementById('allArticlesPanel').classList.toggle('hidden', allKind === 'project');
             document.getElementById('allItemsCount').innerText = `(${items.length})`;
-            // Đang lọc riêng đề tài hoặc bài báo thì không cần cột Loại
-            document.getElementById('allItemsTableEl').classList.toggle('hide-kind', !!allKind);
             const lab = (label, v) => isContains(v) || isRange(v) ? pickText(label, v) : label + ': ' + v;
             const chips = [['aname', pickText('Tên', allFilter.title), allFilter.title], ['aowner', pickText('Tài khoản', allFilter.owner), allFilter.owner], ['adept', pickText('Khoa', dept), dept],
                 ['astage', pickText('Giai đoạn', allFilter.stage), allFilter.stage], ['astart', lab('Bắt đầu', allFilter.start), allFilter.start],
@@ -2293,7 +2313,7 @@
             const chipBox = document.getElementById('allFilterChips');
             chipBox.classList.toggle('hidden', !chips.length);
             chipBox.innerHTML = chips.map(([key, v]) => `<span class="inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1 max-w-full"><span class="truncate">${nrtEscape(v)}</span><button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('');
-            document.querySelectorAll('#allItemsTableEl [data-picker]').forEach(btn => {
+            document.querySelectorAll('#allItemsTableEl [data-picker], #allArticlesTableEl [data-picker]').forEach(btn => {
                 const cfg = PICKERS[btn.dataset.picker];
                 if (cfg) btn.classList.toggle('bg-blue-100', cfg.get() !== 'all');
             });
@@ -2615,12 +2635,15 @@
         }
         const stageOnly = (i, kind) => i.kind !== kind ? [] : [isLiquidated(i) ? (kind === 'article' ? 'Đã rút bài' : 'Đã thanh lý') : (normStage(i.stage) || 'Chưa có giai đoạn')];
 
+        const FACET_STATE_TEXT = { run: 'Đang thực hiện', soon: 'Sắp đến hạn', over: 'Quá hạn', done: 'Hoàn thành', liq: 'Thanh lý / Rút' };
         // [key, nhãn, nhóm, hàm lấy giá trị của một mục, cách sắp xếp, nhãn hiển thị của giá trị (nếu khác)]
         const FACETS = [
             { key: 'account', label: 'Cá nhân (tài khoản)', group: 'who', icon: 'fa-user', values: i => [i.owner.username], text: v => { const a = nrtFindAccount(v); return a ? toNameCase(a.fullName) + ' · ' + v : v; } },
             { key: 'dept', label: 'Khoa', group: 'who', icon: 'fa-hospital', values: i => [i.dept] },
             { key: 'role', label: 'Vai trò của tài khoản', group: 'who', icon: 'fa-id-badge', values: i => ownerRoles(i).length ? ownerRoles(i) : ['Không rõ vai trò'] },
             { key: 'kind', label: 'Loại', group: 'item', hideIn: ['project', 'article'], icon: 'fa-layer-group', values: i => [i.kind === 'article' ? 'Bài báo' : 'Đề tài'] },
+            { key: 'state', label: 'Tiến độ thực hiện', group: 'item', icon: 'fa-person-running', values: i => [FACET_STATE_TEXT[facetStatState(i)]],
+                order: ['Đang thực hiện', 'Sắp đến hạn', 'Quá hạn', 'Hoàn thành', 'Thanh lý / Rút'] },
             { key: 'pstage', label: 'Đề tài theo mốc tiến độ', labels: { project: 'Mốc tiến độ' }, only: 'project', group: 'item', icon: 'fa-flask', union: 'stage', values: i => stageOnly(i, 'project'), order: PROJECT_STAGES.concat('Đã thanh lý') },
             { key: 'astage', label: 'Bài báo theo trạng thái xuất bản', labels: { article: 'Trạng thái xuất bản' }, only: 'article', group: 'item', icon: 'fa-newspaper', union: 'stage', values: i => stageOnly(i, 'article'), order: ARTICLE_STAGES.concat('Đã rút bài') },
             { key: 'result', label: 'Kết quả (hoàn thiện, nghiệm thu, đăng bài...)', labels: { project: 'Kết quả (hoàn thiện, nghiệm thu, thanh lý)', article: 'Kết quả (hoàn thiện, đăng bài, rút bài)' }, group: 'item', icon: 'fa-award', values: i => [resultText(i)],
