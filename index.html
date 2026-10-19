@@ -113,6 +113,11 @@
         .stage-click:hover { background: #eff6ff; }
         .sub-table tbody td:nth-child(2) { min-width: 13rem; }
         .sum-jump a:hover { background: #e8f1ff; }
+        /* 3 ô Toàn bệnh viện / Theo khoa / Theo cá nhân dính dưới thanh đầu trang khi cuộn */
+        #sumJump { position: sticky; top: var(--hdr-h, 96px); z-index: 25; background: rgba(248, 250, 252, 0.96); backdrop-filter: blur(4px); margin-top: 0; padding: 0.5rem 0; }
+        #sectionSummary .sum-tier { scroll-margin-top: calc(var(--hdr-h, 96px) + 60px); }
+        .sum-jump a.on { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
+        .sum-jump a.on i { color: #fde68a; }
         .sum-jump a i { color: #2563eb; font-size: 0.75rem; }
         .sum-tier { display: flex; align-items: flex-start; gap: 0.75rem; padding-top: 0.75rem; border-top: 2px solid #dbeafe; }
         #tierHospital { border-top: 0; padding-top: 0; }
@@ -243,7 +248,7 @@
             <button onclick="refreshData()" class="shrink-0 whitespace-nowrap bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm"><i class="fa-solid fa-rotate mr-1.5"></i>Làm mới</button>
         </div>
 
-        <nav class="sum-jump flex flex-wrap gap-2">
+        <nav id="sumJump" class="sum-jump flex flex-wrap gap-2">
             <a href="#tierHospital" onclick="return jumpTier('tierHospital')"><i class="fa-solid fa-hospital"></i>Toàn bệnh viện</a>
             <a href="#tierDept" onclick="return jumpTier('tierDept')"><i class="fa-solid fa-sitemap"></i>Theo khoa</a>
             <a href="#tierPerson" onclick="return jumpTier('tierPerson')"><i class="fa-solid fa-user"></i>Theo cá nhân</a>
@@ -254,8 +259,8 @@
             <div class="min-w-0"><h2 class="sum-tier-title"><i class="fa-solid fa-hospital mr-1.5 opacity-80"></i>Tổng hợp toàn bệnh viện</h2><p class="sum-tier-desc">Quy mô, kết quả và tiến độ chung của tất cả các khoa. Bấm vào ô số để xem danh sách.</p></div>
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div onclick="showCategory('all', 'all')" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-hospital text-blue-500 mr-1"></i>Khoa tham gia</p><p id="sumDeptsSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumDepts" class="ov-kpi-value text-slate-800 shrink-0">0</h3></div>
-            <div onclick="showCategory('all', 'all')" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-users text-blue-500 mr-1"></i>Tài khoản</p><p id="sumAccountsSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumAccounts" class="ov-kpi-value text-slate-800 shrink-0">0</h3></div>
+            <div onclick="openDeptList()" title="Xem danh sách khoa tham gia" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-hospital text-blue-500 mr-1"></i>Khoa tham gia</p><p id="sumDeptsSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumDepts" class="ov-kpi-value text-slate-800 shrink-0">0</h3></div>
+            <div onclick="openAccountList()" title="Xem danh sách tài khoản" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-users text-blue-500 mr-1"></i>Tài khoản</p><p id="sumAccountsSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumAccounts" class="ov-kpi-value text-slate-800 shrink-0">0</h3></div>
             <div onclick="showCategory('all', 'project')" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-flask text-blue-500 mr-1"></i>Tổng đề tài</p><p id="sumProjectsSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumProjects" class="ov-kpi-value text-blue-600 shrink-0">0</h3></div>
             <div onclick="showCategory('all', 'article')" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-newspaper text-indigo-500 mr-1"></i>Tổng bài báo</p><p id="sumArticlesSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumArticles" class="ov-kpi-value text-indigo-600 shrink-0">0</h3></div>
             <div onclick="showCategory('all', 'project_accepted')" class="ov-kpi cursor-pointer flex items-center justify-between gap-2"><div class="min-w-0"><p class="ov-kpi-label"><i class="fa-solid fa-award text-emerald-500 mr-1"></i>Đề tài đã nghiệm thu</p><p id="sumAcceptedSub" class="text-[11px] text-slate-400 mt-0.5 truncate"></p></div><h3 id="sumAccepted" class="ov-kpi-value text-emerald-600 shrink-0">0</h3></div>
@@ -314,7 +319,7 @@
                     <select id="personDeptFilter" onchange="renderPersonTable()" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"></select>
                     <input id="personSearch" oninput="renderPersonTable()" placeholder="Tìm họ tên, tên đăng nhập..." class="px-3 py-2 border border-slate-200 rounded-lg text-sm w-56">
                 </div>
-                <div id="personFilterChips" class="hidden w-full flex flex-wrap gap-1.5"></div>
+                <div id="personFilterChips" class="hidden w-full flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
             </div>
             <div class="overflow-auto person-scroll">
                 <table class="freeze-2 w-full text-left border-collapse whitespace-nowrap">
@@ -397,13 +402,14 @@
                     </select>
                     <input id="allSearch" oninput="renderAllItems()" placeholder="Tìm tên, tác giả..." class="px-3 py-2 border border-slate-200 rounded-lg text-sm w-48">
                 </div>
-                <div id="allFilterChips" class="hidden flex flex-wrap gap-1.5"></div>
+                <div id="allFilterChips" class="hidden"></div>
             </div>
         </div>
         <div id="detailFacetSlot" class="facet-slot no-print"></div>
         <div id="detailResultSlot" class="no-print"></div>
         <div id="allItemsPanel" class="all-items-panel bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden border-t-4 border-t-blue-500">
             <div class="px-5 py-3 flex items-center gap-2 border-b border-slate-100"><i class="fa-solid fa-flask text-blue-600"></i><h3 class="section-title text-blue-800">Danh sách đề tài <span id="allProjectCount" class="text-slate-400 font-normal text-sm"></span></h3></div>
+            <div class="all-col-chips hidden px-5 py-2 border-b border-slate-100 flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
             <div class="overflow-x-auto hdr-scroll">
                 <table id="allItemsTableEl" class="hide-kind freeze-3 w-full text-left border-collapse">
                     <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
@@ -416,6 +422,7 @@
         </div>
         <div id="allArticlesPanel" class="all-items-panel bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden border-t-4 border-t-indigo-500">
             <div class="px-5 py-3 flex items-center gap-2 border-b border-slate-100"><i class="fa-solid fa-newspaper text-indigo-600"></i><h3 class="section-title text-indigo-800">Danh sách bài báo <span id="allArticleCount" class="text-slate-400 font-normal text-sm"></span></h3></div>
+            <div class="all-col-chips hidden px-5 py-2 border-b border-slate-100 flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
             <div class="overflow-x-auto hdr-scroll">
                 <table id="allArticlesTableEl" class="hide-kind freeze-3 w-full text-left border-collapse">
                     <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
@@ -554,7 +561,7 @@
 
         <div id="accPart_list" class="acc-part-card bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-100"><h3 class="section-title">Danh sách tài khoản <span id="accountsCount" class="text-slate-400 font-medium"></span></h3>
-                <div id="accFilterChips" class="hidden mt-2 flex flex-wrap gap-2"></div></div>
+                <div id="accFilterChips" class="hidden mt-2 flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar"></div></div>
             <div class="overflow-x-auto hdr-scroll">
                 <table class="freeze-2 w-full text-left border-collapse whitespace-nowrap">
                     <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
@@ -1291,14 +1298,15 @@
                     <td class="py-2.5 px-3 text-center text-slate-600">${accCount}</td>
                     ${cols.map(c => cell(dept, c, deptItems.filter(CATEGORY_TESTS[c]).length, c === 'project' || c === 'article')).join('')}
                 </tr>`;
-            if (deptPicked !== 'all' && !isContains(deptPicked) && !depts.includes(deptPicked)) deptPicked = 'all';
+            deptPicked = multiJoin(multiParts(deptPicked).filter(p => isContains(p) || depts.includes(p)));
             const shown = depts.filter(d => pickMatch(deptPicked, d));
             document.getElementById('departmentStatsTable').innerHTML =
                 shown.map(dpt => row(dpt, dpt, items.filter(i => i.dept === dpt), accounts.filter(a => getDepartment(a) === dpt).length, false)).join('') +
                 (depts.length ? (deptPicked === 'all' ? row('all', 'Tổng cộng', items, accounts.length, true).replace('<tr class="', '<tr class="dept-total ') : '') : '<tr><td colspan="13" class="py-6 text-center text-slate-400">Chưa có dữ liệu.</td></tr>');
             const chip = document.getElementById('deptFilterChip');
             chip.classList.toggle('hidden', deptPicked === 'all');
-            chip.innerHTML = deptPicked === 'all' ? '' : `<span class="inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1">Đang xem: ${nrtEscape(pickText('Khoa', deptPicked))}<button type="button" onclick="pickDept('all')" title="Xem tất cả khoa" class="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`;
+            const deptParts = multiParts(deptPicked);
+            chip.innerHTML = deptPicked === 'all' ? '' : `<div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar"><span class="shrink-0 text-xs font-semibold text-slate-500">Đang xem ${deptParts.length} mục:</span>${multiChipsHtml(deptParts.map(p => ['dept', pickText('Khoa', p), p]))}${deptParts.length > 1 ? `<button type="button" onclick="pickerKey='dept'; PICKERS.dept.set('all')" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline px-1">Bỏ hết</button>` : ''}<button type="button" onclick="openColPicker(event, 'dept')" title="Tìm thêm khoa" class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-blue-700 border border-blue-200 bg-blue-50 hover:bg-blue-100 rounded-full px-2.5 py-1"><i class="fa-solid fa-plus text-[10px]"></i>Thêm khoa</button></div>`;
             document.getElementById('deptSearchBtn').classList.toggle('bg-blue-100', deptPicked !== 'all');
             fitDeptTable();
         }
@@ -1371,13 +1379,20 @@
         // Bộ lọc "có chứa chữ": giá trị lọc bắt đầu bằng CONTAINS, so khớp không phân biệt dấu, hoa thường
         const CONTAINS = '\u0001';
         function isContains(v) { return typeof v === 'string' && v.startsWith(CONTAINS); }
+        // Chọn nhiều giá trị (nhiều khoa, nhiều người): MULTI + các giá trị ngăn bởi MSEP; khớp nếu khớp một trong số đó
+        const MULTI = '\u0003', MSEP = '\u0004';
+        function isMulti(v) { return typeof v === 'string' && v.startsWith(MULTI); }
+        function multiParts(v) { return isMulti(v) ? v.slice(1).split(MSEP) : (v && v !== 'all' ? [v] : []); }
+        function multiJoin(parts) { return !parts.length ? 'all' : parts.length === 1 ? parts[0] : MULTI + parts.join(MSEP); }
         function pickMatch(filter, value) {
             if (!filter || filter === 'all') return true;
+            if (isMulti(filter)) return multiParts(filter).some(p => pickMatch(p, value));
             if (isRange(filter)) return rangeMatch(filter, value);
             if (isContains(filter)) return foldVi(value).includes(foldVi(filter.slice(1)));
             return String(value) === filter;
         }
         function pickText(label, filter) {
+            if (isMulti(filter)) return multiParts(filter).map(p => pickText(label, p)).join('; ');
             if (isRange(filter)) return rangeText(label, filter);
             return isContains(filter) ? `${label} có chứa "${filter.slice(1)}"` : filter;
         }
@@ -1409,9 +1424,9 @@
         }
         // Ô chọn khoa (select) cần có sẵn lựa chọn cho bộ lọc "có chứa chữ"
         function deptSelectOptions(select, depts, current) {
-            select.innerHTML = '<option value="all">Tất cả khoa</option>' + (isContains(current) ? `<option value="${nrtEscape(current)}">${nrtEscape(pickText('Khoa', current))}</option>` : '')
+            select.innerHTML = '<option value="all">Tất cả khoa</option>' + (isContains(current) || isMulti(current) ? `<option value="${nrtEscape(current)}">${nrtEscape(pickText('Khoa', current))}</option>` : '')
                 + depts.map(d => `<option value="${nrtEscape(d)}">${nrtEscape(d)}</option>`).join('');
-            select.value = isContains(current) || depts.includes(current) ? current : 'all';
+            select.value = isContains(current) || isMulti(current) || depts.includes(current) ? current : 'all';
         }
         function setDeptSelect(id, v) {
             deptSelectOptions(document.getElementById(id), [...new Set(nrtGetAccounts().map(getDepartment))].sort((x, y) => x.localeCompare(y, 'vi')), v);
@@ -1435,30 +1450,32 @@
             return nrtGetAccounts().filter(acc => Object.keys(accFilter).every(f => skip === f || pickMatch(accFilter[f], ACC_COL_VALUES[f](acc))));
         }
         function accColPicker(field, placeholder, allLabel, icon, sort) {
-            return { placeholder, allLabel, icon,
+            return { multi: true, placeholder, allLabel, icon,
                 values: () => filterAccounts(field).map(ACC_COL_VALUES[field]).filter(Boolean).sort(sort),
                 get: () => accFilter[field], set: v => { accFilter[field] = v; renderAccounts(); } };
         }
 
         function allColPicker(field, placeholder, allLabel, icon, sort) {
-            return { placeholder, allLabel, icon,
+            return { multi: true, placeholder, allLabel, icon,
                 values: () => allKindItems(field).map(ALL_COL_VALUES[field]).sort(sort),
                 get: () => allFilter[field], set: v => { allFilter[field] = v; renderAllItems(); } };
         }
 
         const PICKERS = {
-            dept: { placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: deptNames,
+            qdeptlist: { multi: true, placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: deptNames,
+                get: () => pplDeptListFilter, set: v => { pplDeptListFilter = v; renderPeople(); } },
+            dept: { multi: true, placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: deptNames,
                 get: () => deptPicked, set: v => { deptPicked = v; renderDepartmentStats(); } },
-            pname: { placeholder: 'Gõ họ tên...', allLabel: 'Tất cả mọi người', icon: 'fa-users',
+            pname: { multi: true, placeholder: 'Gõ họ tên...', allLabel: 'Tất cả mọi người', icon: 'fa-users',
                 values: () => filterPersons('name').map(x => toNameCase(x.acc.fullName)).filter(Boolean).sort((x, y) => x.localeCompare(y, 'vi')),
                 get: () => personFilter.name, set: v => { personFilter.name = v; renderPersonTable(); } },
-            puser: { placeholder: 'Gõ tên đăng nhập...', allLabel: 'Tất cả tài khoản', icon: 'fa-users',
+            puser: { multi: true, placeholder: 'Gõ tên đăng nhập...', allLabel: 'Tất cả tài khoản', icon: 'fa-users',
                 values: () => filterPersons('username').map(x => x.acc.username).sort(),
                 get: () => personFilter.username, set: v => { personFilter.username = v; renderPersonTable(); } },
-            aname: { placeholder: 'Gõ tên đề tài / bài báo...', allLabel: 'Tất cả đề tài & bài báo', icon: 'fa-list',
+            aname: { multi: true, placeholder: 'Gõ tên đề tài / bài báo...', allLabel: 'Tất cả đề tài & bài báo', icon: 'fa-list',
                 values: () => allKindItems('title').map(i => i.title).filter(Boolean).sort((x, y) => x.localeCompare(y, 'vi')),
                 get: () => allFilter.title, set: v => { allFilter.title = v; renderAllItems(); } },
-            aowner: { placeholder: 'Gõ họ tên tài khoản...', allLabel: 'Tất cả tài khoản', icon: 'fa-users',
+            aowner: { multi: true, placeholder: 'Gõ họ tên tài khoản...', allLabel: 'Tất cả tài khoản', icon: 'fa-users',
                 values: () => allKindItems('owner').map(i => toNameCase(i.owner.fullName)).filter(Boolean).sort((x, y) => x.localeCompare(y, 'vi')),
                 get: () => allFilter.owner, set: v => { allFilter.owner = v; renderAllItems(); } },
             astage: allColPicker('stage', 'Gõ giai đoạn...', 'Tất cả giai đoạn', 'fa-route', (a, b) => a.localeCompare(b, 'vi', { numeric: true })),
@@ -1466,7 +1483,7 @@
             adeadline: rangeColPicker(() => allFilter, 'deadline', 'Hạn chót', () => renderAllItems()),
             aend: rangeColPicker(() => allFilter, 'end', 'Ngày hoàn thành', () => renderAllItems()),
             astatus: allColPicker('status', 'Gõ tình trạng...', 'Tất cả tình trạng', 'fa-signal', (a, b) => a.localeCompare(b, 'vi')),
-            adept: { placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: () => allKindItems('dept').map(i => i.dept).sort((x, y) => x.localeCompare(y, 'vi')),
+            adept: { multi: true, placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: () => allKindItems('dept').map(i => i.dept).sort((x, y) => x.localeCompare(y, 'vi')),
                 get: () => document.getElementById('allDeptFilter').value || 'all',
                 set: v => { setDeptSelect('allDeptFilter', v); renderAllItems(); } },
             pstatus: personColPicker('status', 'Gõ Online / Offline...', 'Tất cả trạng thái', 'fa-signal', (a, b) => ['Online', 'Offline', 'Đã khóa'].indexOf(a) - ['Online', 'Offline', 'Đã khóa'].indexOf(b)),
@@ -1479,6 +1496,10 @@
             pactivity: rangeColPicker(() => personFilter, 'activity', 'Cập nhật gần nhất', () => renderPersonTable()),
             ...Object.fromEntries(PERSON_ROLE_COLS.map(([f, kind, , label]) => ['p' + f,
                 personColPicker(f, 'Gõ số ' + (kind === 'project' ? 'đề tài' : 'bài báo') + ' (' + label.toLowerCase() + ')...', 'Tất cả', kind === 'project' ? 'fa-flask' : 'fa-newspaper', (x, y) => x - y)])),
+            qname: pplColPicker('name', 'Gõ họ tên...', 'Tất cả mọi người', 'fa-users'),
+            quser: pplColPicker('user', 'Gõ tên đăng nhập...', 'Tất cả tài khoản', 'fa-at'),
+            qdept: pplColPicker('dept', 'Gõ khoa / phòng...', 'Tất cả khoa / phòng', 'fa-hospital'),
+            qdegree: pplColPicker('degree', 'Gõ học vị (ThS, TS, CN...)...', 'Tất cả học vị', 'fa-graduation-cap'),
             kuser: accColPicker('username', 'Gõ tên đăng nhập...', 'Tất cả tài khoản', 'fa-users', (x, y) => x.localeCompare(y)),
             kname: accColPicker('name', 'Gõ họ tên...', 'Tất cả mọi người', 'fa-users', (x, y) => x.localeCompare(y, 'vi')),
             kdept: accColPicker('dept', 'Gõ tên khoa...', 'Tất cả khoa', 'fa-hospital', (x, y) => x.localeCompare(y, 'vi')),
@@ -1486,7 +1507,7 @@
             kpw: accColPicker('pw', 'Gõ mật khẩu hoặc "đã đổi"...', 'Tất cả mật khẩu', 'fa-key', (x, y) => (x === ACC_PW_CHANGED) - (y === ACC_PW_CHANGED) || x.localeCompare(y)),
             kcreated: rangeColPicker(() => accFilter, 'created', 'Ngày cấp', () => renderAccounts()),
             klogin: rangeColPicker(() => accFilter, 'login', 'Đăng nhập gần nhất', () => renderAccounts()),
-            pdept: { placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: () => filterPersons('dept').map(x => getDepartment(x.acc)).sort((x, y) => x.localeCompare(y, 'vi')),
+            pdept: { multi: true, placeholder: 'Gõ tên khoa...', allLabel: 'Tất cả khoa', icon: 'fa-hospital', values: () => filterPersons('dept').map(x => getDepartment(x.acc)).sort((x, y) => x.localeCompare(y, 'vi')),
                 get: () => document.getElementById('personDeptFilter').value || 'all',
                 set: v => { setDeptSelect('personDeptFilter', v); renderPersonTable(); } }
         };
@@ -1607,7 +1628,7 @@
                 <button type="button" data-value="${nrtEscape(o.value)}" onclick="pickDept(this.dataset.value)" onmouseenter="deptPickerIndex=${i}; highlightDeptPicker()"
                     class="dept-opt w-full text-left px-3 py-2 text-sm flex items-center justify-between gap-2 ${o.value === 'all' || o.contains ? 'font-semibold text-blue-700 border-b border-slate-100' : 'text-slate-700'}">
                     <span class="truncate">${o.contains ? `<i class="fa-solid fa-filter mr-1.5"></i>Lọc có chứa "<b>${nrtEscape(o.label)}</b>"` : (o.value === 'all' ? `<i class="fa-solid ${cfg.icon} mr-1.5"></i>` : '') + mark(o.label)}</span>
-                    ${o.value === current ? '<i class="fa-solid fa-check text-blue-600 text-xs"></i>' : ''}
+                    ${o.value === current || (o.value !== 'all' && multiParts(current).includes(o.value)) ? '<i class="fa-solid fa-check text-blue-600 text-xs"></i>' : ''}
                 </button>`).join('') || '<p class="px-3 py-3 text-sm text-slate-400">Không tìm thấy kết quả phù hợp.</p>';
             highlightDeptPicker();
         }
@@ -1634,7 +1655,27 @@
         function pickDept(value) {
             const cfg = PICKERS[pickerKey];
             closeDeptPicker();
-            if (cfg) cfg.set(value || 'all');
+            if (!cfg) return;
+            // Ô lọc chọn nhiều: mỗi lần chọn thêm một giá trị (chọn lại giá trị đã có thì bỏ nó)
+            if (!cfg.range && cfg.multi !== false && value && value !== 'all') {
+                const parts = multiParts(cfg.get());
+                return cfg.set(multiJoin(parts.includes(value) ? parts.filter(p => p !== value) : parts.concat(value)));
+            }
+            cfg.set(value || 'all');
+        }
+        function clearPersonFilters() {
+            Object.keys(personFilter).forEach(k => { personFilter[k] = 'all'; });
+            setDeptSelect('personDeptFilter', 'all');
+            renderPersonTable();
+        }
+        // Bỏ một giá trị khỏi ô lọc chọn nhiều (nút ✕ trên nhãn)
+        function unpickValue(key, value) {
+            const cfg = PICKERS[key];
+            if (cfg) cfg.set(multiJoin(multiParts(cfg.get()).filter(p => p !== value)));
+        }
+        // Nhãn từng giá trị đang lọc, xếp ngang một hàng (kéo ngang khi nhiều)
+        function multiChipsHtml(entries) {
+            return entries.map(([key, label, value]) => `<span class="shrink-0 inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1 max-w-[16rem]"><span class="truncate">${nrtEscape(label)}</span><button type="button" data-k="${key}" data-v="${nrtEscape(value)}" onclick="unpickValue(this.dataset.k, this.dataset.v)" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('');
         }
 
         // Khung bảng chỉ cao vừa khoảng 10 khoa, các khoa còn lại cuộn trong khung; dòng Tổng cộng luôn ở đáy
@@ -1690,6 +1731,7 @@
         // ================= TRANG CON LỌC TỪ TỔNG HỢP (giống app con) =================
         let subState = null;
         let subReturnY = 0;
+        let subReturnTab = 'summary';   // tab đang mở khi bấm vào ô số (trang con đóng lại thì về đúng tab đó)
 
         const categoryLabel = cat => {
             const opt = document.querySelector(`#allCategoryFilter option[value="${cat}"]`);
@@ -1727,9 +1769,9 @@
         }
 
         function openSubList(title, test) {
-            if (document.getElementById('sectionSubList').classList.contains('hidden')) subReturnY = window.scrollY;
+            if (document.getElementById('sectionSubList').classList.contains('hidden')) { subReturnY = window.scrollY; subReturnTab = currentAdminTab; }
             subState = { title, test };
-            ['sectionSummary', 'sectionDetail', 'sectionAccounts', 'sectionMonitor'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.querySelectorAll('main[id^="section"]').forEach(el => { if (el.id !== 'sectionSubList') el.classList.add('hidden'); });
             document.getElementById('sectionSubList').classList.remove('hidden');
             renderSubList();
             window.scrollTo({ top: 0 });
@@ -1749,7 +1791,7 @@
 
         function closeSubList() {
             subState = null;
-            switchAdminTab('summary');
+            switchAdminTab(subReturnTab || 'summary');
             window.scrollTo({ top: subReturnY });
         }
 
@@ -2009,6 +2051,7 @@
             // Tab Theo dõi - quản lý đã bỏ: hồ sơ cá nhân / khoa (bấm tên người, tên khoa) hiện ở Danh sách chi tiết
             if (tab === 'monitor') tab = 'detail';
             jumpBackY = null;
+            if (tab !== 'people') pplDeptList = false;
             currentAdminTab = tab;
             const map = { summary: ['sectionSummary', 'tabSummary'], detail: ['sectionDetail', 'tabDetail'], projects: ['sectionProjects', 'tabProjects'], articles: ['sectionArticles', 'tabArticles'], people: ['sectionPeople', 'tabPeople'], accounts: ['sectionAccounts', 'tabAccounts'], report: ['sectionReport', 'tabReport'] };
             // Bộ lọc dùng chung cho các tab Danh sách chi tiết, Đề tài nghiên cứu, Bài báo khoa học, Báo cáo: chuyển khung lọc sang tab đang mở
@@ -2156,12 +2199,14 @@
             // Nhãn bộ lọc đang áp dụng, bấm ✕ để bỏ
             const colLabels = Object.assign({ projects: 'Đề tài', accepted: 'Nghiệm thu', danger: 'Quá hạn', articles: 'Bài báo', published: 'Đã đăng', login: 'Đăng nhập', activity: 'Cập nhật' },
                 Object.fromEntries(PERSON_ROLE_COLS.map(r => [r[0], r[3]])));
-            const chips = [['pname', pickText('Họ tên', personFilter.name)], ['puser', pickText('Tên đăng nhập', personFilter.username)], ['pdept', pickText('Khoa', dept)], ['pstatus', pickText('Trạng thái', personFilter.status)]]
-                .concat(PERSON_COLS.filter(f => f !== 'status').map(f => ['p' + f, personFilter[f] === 'all' ? 'all' : isContains(personFilter[f]) || isRange(personFilter[f]) ? pickText(colLabels[f], personFilter[f]) : colLabels[f] + ': ' + personFilter[f]]))
-                .filter(c => c[1] !== 'all');
+            const multiEntries = [['pname', 'Họ tên', personFilter.name, true], ['puser', 'Tên đăng nhập', personFilter.username, true], ['pdept', 'Khoa', dept, true], ['pstatus', 'Trạng thái', personFilter.status]]
+                .concat(PERSON_COLS.filter(f => f !== 'status' && !isRange(personFilter[f])).map(f => ['p' + f, colLabels[f], personFilter[f]]))
+                .flatMap(([key, label, v, bare]) => multiParts(v).map(p => [key, isContains(p) ? pickText(label, p) : bare ? p : label + ': ' + p, p]));
+            const chips = PERSON_COLS.filter(f => isRange(personFilter[f])).map(f => ['p' + f, pickText(colLabels[f], personFilter[f])]);
             const chipBox = document.getElementById('personFilterChips');
-            chipBox.classList.toggle('hidden', !chips.length);
-            chipBox.innerHTML = chips.map(([key, v]) => `<span class="inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1">${nrtEscape(v)}<button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('');
+            chipBox.classList.toggle('hidden', !chips.length && !multiEntries.length);
+            chipBox.innerHTML = multiChipsHtml(multiEntries) + chips.map(([key, v]) => `<span class="shrink-0 inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1">${nrtEscape(v)}<button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('')
+                + (chips.length + multiEntries.length > 1 ? `<button type="button" onclick="clearPersonFilters()" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline px-1">Bỏ hết</button>` : '');
             document.querySelectorAll('[data-picker]').forEach(btn => {
                 const cfg = PICKERS[btn.dataset.picker];
                 if (cfg) btn.classList.toggle('bg-blue-100', cfg.get() !== 'all');
@@ -2180,7 +2225,7 @@
         function jumpTier(id) {
             jumpBackY = window.scrollY;
             document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
-            setTimeout(updateFloatNav, 600);
+            setTimeout(() => { updateFloatNav(); updateSumJump(); }, 600);
             return false;
         }
         function floatBack() {
@@ -2195,6 +2240,20 @@
             updateFloatNav();
         }
         // Nút nổi góc dưới phải: "Lên đầu trang" khi đã cuộn xuống; "Quay lại" sau khi bấm nhảy tới một mục
+        // Ô đang xem (Toàn bệnh viện / Theo khoa / Theo cá nhân) được tô đậm theo vị trí cuộn
+        function updateSumJump() {
+            const nav = document.getElementById('sumJump');
+            if (!nav || !nav.offsetParent) return;
+            const line = nav.getBoundingClientRect().bottom + 24;
+            let cur = 'tierHospital';
+            ['tierHospital', 'tierDept', 'tierPerson'].forEach(id => { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= line) cur = id; });
+            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = 'tierPerson';
+            nav.querySelectorAll('a').forEach(a => {
+                const on = a.getAttribute('href') === '#' + cur;
+                if (on !== a.classList.contains('on')) { a.classList.toggle('on', on); if (on) a.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+            });
+        }
+        window.addEventListener('scroll', updateSumJump, { passive: true });
         function updateFloatNav() {
             const top = document.getElementById('floatTopBtn'), back = document.getElementById('floatBackBtn');
             if (!top) return;
@@ -2263,6 +2322,11 @@
                 .filter(Boolean).join(' ').toLowerCase().includes(q));
             return items;
         }
+        function clearAllColFilters() {
+            Object.keys(allFilter).forEach(k => { allFilter[k] = 'all'; });
+            setDeptSelect('allDeptFilter', 'all');
+            renderAllItems();
+        }
         const allKindItems = skip => filterAllItems(skip).filter(i => !allKind || (i.kind === 'article') === (allKind === 'article'));
 
         function renderAllItems() {
@@ -2306,13 +2370,17 @@
             document.getElementById('allArticlesPanel').classList.toggle('hidden', allKind === 'project');
             document.getElementById('allItemsCount').innerText = `(${items.length})`;
             const lab = (label, v) => isContains(v) || isRange(v) ? pickText(label, v) : label + ': ' + v;
-            const chips = [['aname', pickText('Tên', allFilter.title), allFilter.title], ['aowner', pickText('Tài khoản', allFilter.owner), allFilter.owner], ['adept', pickText('Khoa', dept), dept],
-                ['astage', pickText('Giai đoạn', allFilter.stage), allFilter.stage], ['astart', lab('Bắt đầu', allFilter.start), allFilter.start],
-                ['adeadline', lab('Hạn chót', allFilter.deadline), allFilter.deadline], ['aend', lab('Hoàn thành', allFilter.end), allFilter.end], ['astatus', pickText('Tình trạng', allFilter.status), allFilter.status]]
-                .filter(c => (c.length > 2 ? c[2] : c[1]) !== 'all');
-            const chipBox = document.getElementById('allFilterChips');
-            chipBox.classList.toggle('hidden', !chips.length);
-            chipBox.innerHTML = chips.map(([key, v]) => `<span class="inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1 max-w-full"><span class="truncate">${nrtEscape(v)}</span><button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('');
+            // Ô lọc chọn nhiều (Tên, Tài khoản, Khoa, Giai đoạn): mỗi giá trị một nhãn nhỏ; ô ngày, tình trạng: một nhãn
+            const multiEntries = [['aname', 'Tên', allFilter.title], ['aowner', 'Tài khoản', allFilter.owner], ['adept', 'Khoa', dept], ['astage', 'Giai đoạn', allFilter.stage], ['astatus', 'Tình trạng', allFilter.status, true]]
+                .flatMap(([key, label, v, pre]) => multiParts(v).map(p => [key, isContains(p) ? pickText(label, p) : pre ? label + ': ' + p : p, p]));
+            const chips = [['astart', lab('Bắt đầu', allFilter.start), allFilter.start], ['adeadline', lab('Hạn chót', allFilter.deadline), allFilter.deadline],
+                ['aend', lab('Hoàn thành', allFilter.end), allFilter.end]]
+                .filter(c => c[2] !== 'all');
+            const chipHtml = multiEntries.length + chips.length ? `<span class="shrink-0 text-xs font-semibold text-slate-500">Đang tìm:</span>` + multiChipsHtml(multiEntries)
+                + chips.map(([key, v]) => `<span class="shrink-0 inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1 max-w-[16rem]"><span class="truncate">${nrtEscape(v)}</span><button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('')
+                + (multiEntries.length + chips.length > 1 ? `<button type="button" onclick="clearAllColFilters()" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline px-1">Bỏ hết</button>` : '') : '';
+            // Hiện ngay dưới tiêu đề Danh sách đề tài / Danh sách bài báo, trên bảng
+            document.querySelectorAll('.all-col-chips').forEach(box => { box.classList.toggle('hidden', !chipHtml); box.innerHTML = chipHtml; });
             document.querySelectorAll('#allItemsTableEl [data-picker], #allArticlesTableEl [data-picker]').forEach(btn => {
                 const cfg = PICKERS[btn.dataset.picker];
                 if (cfg) btn.classList.toggle('bg-blue-100', cfg.get() !== 'all');
@@ -2392,6 +2460,10 @@
             if (on && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: on.offsetLeft - nav.offsetLeft - (nav.clientWidth - on.offsetWidth) / 2, behavior: 'smooth' });
         }
 
+        function clearAccFilters() {
+            Object.keys(accFilter).forEach(k => { accFilter[k] = 'all'; });
+            renderAccounts();
+        }
         function renderAccounts() {
             const all = nrtGetAccounts();
             const accounts = filterAccounts();
@@ -2399,11 +2471,15 @@
             document.getElementById('accountsCount').innerText = filtered ? `(${accounts.length}/${all.length})` : `(${all.length})`;
             const labels = { username: 'Tên đăng nhập', name: 'Họ tên', dept: 'Khoa', status: 'Trạng thái', pw: 'Mật khẩu', created: 'Ngày cấp', login: 'Đăng nhập' };
             const keys = { username: 'kuser', name: 'kname', dept: 'kdept', status: 'kstatus', pw: 'kpw', created: 'kcreated', login: 'klogin' };
-            const chips = Object.keys(accFilter).filter(f => accFilter[f] !== 'all').map(f => [keys[f],
-                isContains(accFilter[f]) || isRange(accFilter[f]) ? pickText(labels[f], accFilter[f]) : labels[f] + ': ' + accFilter[f]]);
+            // Ô lọc chọn nhiều: mỗi giá trị một nhãn nhỏ; ô ngày: một nhãn
+            const multiEntries = Object.keys(accFilter).filter(f => accFilter[f] !== 'all' && !isRange(accFilter[f]))
+                .flatMap(f => multiParts(accFilter[f]).map(p => [keys[f], isContains(p) ? pickText(labels[f], p) : (f === 'name' ? p : labels[f] + ': ' + p), p]));
+            const chips = Object.keys(accFilter).filter(f => isRange(accFilter[f])).map(f => [keys[f], pickText(labels[f], accFilter[f])]);
             const chipBox = document.getElementById('accFilterChips');
-            chipBox.classList.toggle('hidden', !chips.length);
-            chipBox.innerHTML = chips.map(([key, v]) => `<span class="inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1 max-w-full"><span class="truncate">${nrtEscape(v)}</span><button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('');
+            chipBox.classList.toggle('hidden', !chips.length && !multiEntries.length);
+            chipBox.innerHTML = (multiEntries.length + chips.length ? '<span class="shrink-0 text-xs font-semibold text-slate-500">Đang tìm:</span>' : '') + multiChipsHtml(multiEntries)
+                + chips.map(([key, v]) => `<span class="inline-flex items-center gap-2 text-xs font-semibold bg-blue-600 text-white rounded-full pl-3 pr-1 py-1 max-w-full"><span class="truncate">${nrtEscape(v)}</span><button type="button" onclick="pickerKey='${key}'; pickDept('all')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`).join('')
+                + (multiEntries.length + chips.length > 1 ? `<button type="button" onclick="clearAccFilters()" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline px-1">Bỏ hết</button>` : '');
             document.querySelectorAll('#sectionAccounts [data-picker]').forEach(btn => {
                 const cfg = PICKERS[btn.dataset.picker];
                 if (cfg) btn.classList.toggle('bg-blue-100', cfg.get() !== 'all');
@@ -2411,9 +2487,9 @@
             document.getElementById('accountsTable').innerHTML = accounts.map((acc, idx) => `
                 <tr class="hover:bg-slate-50/80">
                     <td class="py-3 px-4 text-center text-slate-500">${idx + 1}</td>
-                    <td class="py-3 px-4 font-semibold text-slate-800">${nrtEscape(acc.username)}</td>
-                    <td class="py-3 px-4">${nrtEscape(toNameCase(acc.fullName))}</td>
-                    <td class="py-3 px-4 text-slate-600">${nrtEscape(getDepartment(acc))}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-800">${personLink(acc.username, nrtEscape(acc.username), 'hover:text-blue-700 hover:underline text-left')}</td>
+                    <td class="py-3 px-4">${personLink(acc.username, nrtEscape(toNameCase(acc.fullName)), 'hover:text-blue-700 hover:underline text-left')}</td>
+                    <td class="py-3 px-4 text-slate-600">${personLink(acc.username, nrtEscape(getDepartment(acc)), 'hover:text-blue-700 hover:underline text-left')}</td>
                     <td class="py-3 px-4">${presenceBadge(acc)}</td>
                     <td class="py-3 px-4 text-xs">${accPasswordCell(acc)}${passwordDueText(acc)}</td>
                     <td class="py-3 px-4 text-slate-500">${nrtFormatDateTime(acc.createdAt)}</td>
@@ -2641,6 +2717,7 @@
             { key: 'account', label: 'Cá nhân (tài khoản)', group: 'who', icon: 'fa-user', values: i => [i.owner.username], text: v => { const a = nrtFindAccount(v); return a ? toNameCase(a.fullName) + ' · ' + v : v; } },
             { key: 'dept', label: 'Khoa', group: 'who', icon: 'fa-hospital', values: i => [i.dept] },
             { key: 'role', label: 'Vai trò của tài khoản', group: 'who', icon: 'fa-id-badge', values: i => ownerRoles(i).length ? ownerRoles(i) : ['Không rõ vai trò'] },
+            { key: 'title', label: 'Tên đề tài / bài báo', labels: { project: 'Tên đề tài', article: 'Tên bài báo' }, group: 'item', icon: 'fa-heading', values: i => String(i.title || '').trim() ? [String(i.title).trim()] : [] },
             { key: 'kind', label: 'Loại', group: 'item', hideIn: ['project', 'article'], icon: 'fa-layer-group', values: i => [i.kind === 'article' ? 'Bài báo' : 'Đề tài'] },
             { key: 'state', label: 'Tiến độ thực hiện', group: 'item', icon: 'fa-person-running', values: i => [FACET_STATE_TEXT[facetStatState(i)]],
                 order: ['Đang thực hiện', 'Sắp đến hạn', 'Quá hạn', 'Hoàn thành', 'Thanh lý / Rút'] },
@@ -3026,13 +3103,167 @@
             return { p: one(items.filter(i => i.kind === 'project'), 'Chủ nhiệm'), a: one(items.filter(i => i.kind === 'article'), 'Tác giả chính') };
         }
         // Tài khoản đang xem: đã chọn thì lấy các tài khoản đã chọn, chưa chọn thì lấy tất cả (theo khoa nếu có chọn khoa)
-        function pplPool() {
-            return nrtGetAccounts().filter(a => !pplDept.length || pplDept.includes(getDepartment(a)))
+        // Kính lúp trên bảng: lọc nhiều Họ tên, Tài khoản, Khoa / phòng, Học vị cùng lúc
+        const pplColFilter = { name: 'all', user: 'all', dept: 'all', degree: 'all' };
+        const PPL_NO_DEGREE = 'Chưa khai học vị';
+        const PPL_COL_VALUE = { name: a => toNameCase(a.fullName), user: a => a.username, dept: a => getDepartment(a),
+            degree: a => String((getUserData(a).profile || {}).degree || '').trim() || PPL_NO_DEGREE };
+        const pplPass = (a, skip) => Object.keys(pplColFilter).every(f => f === skip || pickMatch(pplColFilter[f], PPL_COL_VALUE[f](a)));
+        function pplColPicker(field, placeholder, allLabel, icon) {
+            return { multi: true, placeholder, allLabel, icon,
+                values: () => pplPool(field).map(PPL_COL_VALUE[field]).sort((x, y) => x.localeCompare(y, 'vi')),
+                get: () => pplColFilter[field], set: v => { pplColFilter[field] = v; renderPeople(); } };
+        }
+        function clearPplColFilters() {
+            Object.keys(pplColFilter).forEach(k => { pplColFilter[k] = 'all'; });
+            renderPeople();
+        }
+        function pplColBtn(key, title, icon = 'fa-magnifying-glass') {
+            const on = PICKERS[key] && PICKERS[key].get() !== 'all';
+            return `<button type="button" data-picker="${key}" onclick="openColPicker(event, '${key}')" title="${title}" class="col-filter-btn w-7 h-7 -my-1 shrink-0 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-100 transition ${on ? 'bg-blue-100' : ''}"><i class="fa-solid ${icon} text-[13px]"></i></button>`;
+        }
+        function pplColChips() {
+            const entries = [['qname', 'Họ tên', 'name'], ['quser', 'Tài khoản', 'user'], ['qdept', 'Khoa', 'dept'], ['qdegree', 'Học vị', 'degree']]
+                .flatMap(([key, label, f]) => multiParts(pplColFilter[f]).map(p => [key, isContains(p) ? pickText(label, p) : (f === 'name' ? p : label + ': ' + p), p]));
+            return entries.length ? `<div class="px-4 sm:px-6 py-2 border-b border-slate-100 flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar"><span class="shrink-0 text-xs font-semibold text-slate-500">Đang tìm:</span>${multiChipsHtml(entries)}${entries.length > 1 ? `<button type="button" onclick="clearPplColFilters()" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline px-1">Bỏ hết</button>` : ''}</div>` : '';
+        }
+        function pplPool(skip) {
+            return nrtGetAccounts().filter(a => (!pplDept.length || pplDept.includes(getDepartment(a))) && pplPass(a, skip))
                 .sort((x, y) => getDepartment(x).localeCompare(getDepartment(y), 'vi') || toNameCase(x.fullName).localeCompare(toNameCase(y.fullName), 'vi'));
         }
         function pplShown() {
             // Mới tích 1 ô trong bảng: vẫn hiện cả danh sách để tích thêm người so sánh
-            return (pplSel.length > 1 && pplCompareOn) || (pplSel.length === 1 && pplFocus) ? pplSel.map(pplAcc).filter(Boolean) : pplPool();
+            if (pplSel.length === 1 && pplFocus) return pplSel.map(pplAcc).filter(Boolean);
+            return pplSel.length > 1 && pplCompareOn ? pplSel.map(pplAcc).filter(a => a && pplPass(a)) : pplPool();
+        }
+
+        // ----- Ô "Khoa tham gia" và "Tài khoản" ở Tổng hợp: mở danh sách khoa / tài khoản (không phải danh sách đề tài, bài báo) -----
+        let pplDeptList = false;          // đang xem từ danh sách "Khoa tham gia" (bấm tên khoa để xem thống kê khoa đó)
+        let pplDeptListFilter = 'all';    // kính lúp cột Khoa của danh sách khoa: chọn được nhiều khoa
+        let pplLastAccs = [];             // các tài khoản đang hiện trong bảng (dòng Tổng cộng mở danh sách của cả nhóm)
+        function openAccountList() {
+            pplDeptList = false;
+            pplDept = [];
+            Object.keys(pplColFilter).forEach(k => { pplColFilter[k] = 'all'; });
+            openPeople([], true);
+        }
+        function openDeptList() {
+            pplDeptList = true;
+            pplDept = [];
+            openPeople([], true);
+            pplDeptList = true;
+            renderPeople();
+        }
+        function pplOpenDepts(depts) {
+            pplDeptList = true;
+            pplDept = depts.slice();
+            pplSel = [];
+            pplFocus = false;
+            pplCompareOn = false;
+            renderPeople();
+            window.scrollTo({ top: 0 });
+        }
+        function pplBackToDepts() { pplOpenDepts([]); }
+        function pplDeptRows() {
+            const all = getAllItems();
+            const accs = nrtGetAccounts();
+            return deptNames().map(d => {
+                const items = all.filter(i => i.dept === d);
+                return { d, acc: accs.filter(a => getDepartment(a) === d).length, p: items.filter(i => i.kind === 'project').length, a: items.filter(i => i.kind === 'article').length };
+            });
+        }
+        // Mở danh sách đề tài / bài báo của các khoa (bấm số ở bảng khoa)
+        function pplOpenDeptItems(depts, kind) {
+            const label = kind === 'project' ? 'Đề tài' : kind === 'article' ? 'Bài báo' : 'Đề tài & bài báo';
+            openSubList(label + ' · ' + (depts.length === 1 ? depts[0] : depts.length + ' khoa'), i => depts.includes(i.dept) && (!kind || i.kind === kind));
+        }
+        function pplDeptCountBtn(n, onclick, cls, title) {
+            return n ? `<button type="button" onclick="${onclick}" title="${title}" class="font-bold ${cls} hover:underline">${n}</button>` : '<span class="text-slate-300">0</span>';
+        }
+        const pplJs = v => nrtEscape(JSON.stringify(v)).replace(/'/g, '&#39;');
+        function pplDeptListHtml() {
+            const rows = pplDeptRows().filter(r => pickMatch(pplDeptListFilter, r.d));
+            const sum = rows.reduce((t, r) => ({ acc: t.acc + r.acc, p: t.p + r.p, a: t.a + r.a }), { acc: 0, p: 0, a: 0 });
+            const names = rows.map(r => r.d);
+            const chips = multiParts(pplDeptListFilter).map(p => ['qdeptlist', isContains(p) ? pickText('Khoa', p) : p, p]);
+            const filtered = pplDeptListFilter !== 'all';
+            return `<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-4 sm:px-6 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        ${pplReturn ? '<button type="button" onclick="pplBack()" class="shrink-0 w-8 h-8 rounded-full hover:bg-slate-100 text-slate-700 flex items-center justify-center" title="Quay lại"><i class="fa-solid fa-arrow-left"></i></button>' : ''}
+                        <h3 class="section-title"><i class="fa-solid fa-hospital mr-1.5"></i>Khoa tham gia <span class="text-slate-400 font-normal normal-case">(${rows.length})</span></h3>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        ${filtered && rows.length ? `<button type="button" onclick='pplOpenDepts(${pplJs(names)})' class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"><i class="fa-solid fa-chart-simple mr-1"></i>Thống kê ${rows.length} khoa đã lọc</button>` : ''}
+                        <button type="button" onclick="openAccountList()" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-white hover:bg-blue-50 text-blue-700 text-xs font-semibold"><i class="fa-solid fa-users mr-1"></i>Tất cả tài khoản</button>
+                    </div>
+                </div>
+                ${chips.length ? `<div class="px-4 sm:px-6 py-2 border-b border-slate-100 flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar"><span class="shrink-0 text-xs font-semibold text-slate-500">Đang tìm:</span>${multiChipsHtml(chips)}${chips.length > 1 ? `<button type="button" onclick="PICKERS.qdeptlist.set('all')" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline px-1">Bỏ hết</button>` : ''}</div>` : ''}
+                <div class="overflow-x-auto"><table class="w-full text-left border-collapse text-sm">
+                    <thead class="text-xs uppercase tracking-wider text-slate-500"><tr class="bg-slate-50">
+                        <th class="py-2.5 px-3 text-center w-12">STT</th>
+                        <th class="py-2.5 px-3"><div class="flex items-center justify-between gap-2"><span>Khoa / phòng</span>${pplColBtn('qdeptlist', 'Tìm khoa (chọn được nhiều khoa)')}</div></th>
+                        <th class="py-2.5 px-3 text-center whitespace-nowrap">Tài khoản</th>
+                        <th class="py-2.5 px-3 text-center whitespace-nowrap text-blue-700">Đề tài</th>
+                        <th class="py-2.5 px-3 text-center whitespace-nowrap text-indigo-700">Bài báo</th>
+                    </tr></thead>
+                    <tbody class="divide-y divide-slate-100">${rows.map((r, i) => `<tr class="hover:bg-slate-50/80">
+                        <td class="py-2.5 px-3 text-center text-slate-500">${i + 1}</td>
+                        <td class="py-2.5 px-3"><button type="button" onclick='pplOpenDepts(${pplJs([r.d])})' title="Xem thống kê khoa" class="font-semibold text-slate-800 hover:text-blue-700 hover:underline text-left">${nrtEscape(r.d)}</button></td>
+                        <td class="py-2.5 px-3 text-center">${pplDeptCountBtn(r.acc, `pplOpenDepts(${pplJs([r.d])})`, 'text-slate-800', 'Xem tài khoản của khoa')}</td>
+                        <td class="py-2.5 px-3 text-center">${pplDeptCountBtn(r.p, `pplOpenDeptItems(${pplJs([r.d])}, 'project')`, 'text-blue-700', 'Xem đề tài của khoa')}</td>
+                        <td class="py-2.5 px-3 text-center">${pplDeptCountBtn(r.a, `pplOpenDeptItems(${pplJs([r.d])}, 'article')`, 'text-indigo-700', 'Xem bài báo của khoa')}</td>
+                    </tr>`).join('') || '<tr><td colspan="5" class="py-6 text-center text-slate-400">Không có khoa nào phù hợp.</td></tr>'}</tbody>
+                    ${rows.length > 1 ? `<tfoot><tr class="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-200">
+                        <td></td><td class="py-2.5 px-3">Tổng cộng (${rows.length} khoa)</td>
+                        <td class="py-2.5 px-3 text-center">${pplDeptCountBtn(sum.acc, `pplOpenDepts(${pplJs(names)})`, 'text-slate-800', 'Xem tài khoản các khoa này')}</td>
+                        <td class="py-2.5 px-3 text-center">${pplDeptCountBtn(sum.p, `pplOpenDeptItems(${pplJs(names)}, 'project')`, 'text-blue-700', 'Xem đề tài')}</td>
+                        <td class="py-2.5 px-3 text-center">${pplDeptCountBtn(sum.a, `pplOpenDeptItems(${pplJs(names)}, 'article')`, 'text-indigo-700', 'Xem bài báo')}</td>
+                    </tr></tfoot>` : ''}
+                </table></div>
+                <p class="px-4 sm:px-6 py-2.5 border-t border-slate-100 text-xs text-slate-500"><i class="fa-solid fa-circle-info text-blue-500 mr-1"></i>Bấm tên khoa để xem thống kê khoa đó; bấm con số để mở danh sách tương ứng.</p>
+            </div>`;
+        }
+        // Thẻ thống kê khoa đang chọn: số tài khoản, tổng đề tài, tổng bài báo (bảng tài khoản chi tiết nằm ngay dưới)
+        function pplDeptCardHtml(all) {
+            const rows = pplDeptRows().filter(r => pplDept.includes(r.d));
+            const items = all.filter(i => pplDept.includes(i.dept));
+            const p = items.filter(i => i.kind === 'project'), a = items.filter(i => i.kind === 'article');
+            const st = pplStats(items);
+            const accN = nrtGetAccounts().filter(x => pplDept.includes(getDepartment(x))).length;
+            const depts = pplJs(pplDept);
+            const kpi = (icon, label, n, sub, onclick, cls) => `<button type="button" ${n ? `onclick="${onclick}"` : 'disabled'} class="text-left rounded-xl border border-slate-100 bg-slate-50/60 ${n ? 'hover:border-blue-300 hover:bg-blue-50' : 'cursor-default'} px-4 py-3 transition">
+                    <span class="block text-xs font-semibold text-slate-500 uppercase"><i class="fa-solid ${icon} mr-1"></i>${label}</span>
+                    <span class="block text-2xl font-extrabold ${cls}">${n}</span><span class="block text-[11px] text-slate-500 truncate">${sub}</span></button>`;
+            return `<div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
+                <div class="px-4 sm:px-6 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        ${pplDeptList ? '<button type="button" onclick="pplBackToDepts()" class="shrink-0 w-8 h-8 rounded-full hover:bg-slate-100 text-slate-700 flex items-center justify-center" title="Về danh sách khoa"><i class="fa-solid fa-arrow-left"></i></button>' : ''}
+                        <h3 class="section-title min-w-0 truncate"><i class="fa-solid fa-hospital mr-1.5"></i>Thống kê ${pplDept.length === 1 ? 'khoa: ' + nrtEscape(pplDept[0]) : pplDept.length + ' khoa đã chọn'}</h3>
+                    </div>
+                    ${pplDeptList ? '<button type="button" onclick="pplBackToDepts()" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-white hover:bg-blue-50 text-blue-700 text-xs font-semibold"><i class="fa-solid fa-list mr-1"></i>Danh sách khoa</button>' : ''}
+                </div>
+                <div class="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                    ${kpi('fa-users', 'Tài khoản', accN, 'Xem chi tiết từng tài khoản bên dưới', "document.getElementById('pplAccTableAnchor').scrollIntoView({behavior:'smooth', block:'start'})", 'text-slate-800')}
+                    ${kpi('fa-flask', 'Tổng đề tài', p.length, `${st.p.run} đang thực hiện · ${st.p.done} đã nghiệm thu · ${st.p.over} quá hạn`, `pplOpenDeptItems(${depts}, 'project')`, 'text-blue-600')}
+                    ${kpi('fa-newspaper', 'Tổng bài báo', a.length, `${st.a.run} đang thực hiện · ${st.a.done} đã đăng · ${st.a.over} quá hạn`, `pplOpenDeptItems(${depts}, 'article')`, 'text-indigo-600')}
+                </div>
+                ${rows.length > 1 ? `<div class="px-3 sm:px-4 pb-3 flex flex-nowrap gap-1.5 overflow-x-auto no-scrollbar">${rows.map(r => `<button type="button" onclick='pplOpenDepts(${pplJs([r.d])})' class="shrink-0 text-xs px-2.5 py-1 rounded-full border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50 text-slate-700"><b>${nrtEscape(r.d)}</b> · ${r.acc} TK · ${r.p} ĐT · ${r.a} BB</button>`).join('')}</div>` : ''}
+            </div><div id="pplAccTableAnchor" class="scroll-mt-40"></div>`;
+        }
+        // Số trong bảng tài khoản: bấm để mở danh sách đề tài / bài báo tương ứng của tài khoản (dòng Tổng cộng: của cả nhóm)
+        function pplStatBtn(n, username, g, k) {
+            if (!n) return String(n);
+            return `<button type="button" data-u="${nrtEscape(username)}" onclick="pplOpenStat(this.dataset.u, '${g}', '${k}')" title="Xem danh sách" class="hover:underline">${n}</button>`;
+        }
+        function pplOpenStat(username, g, k) {
+            const kind = g === 'p' ? 'project' : 'article';
+            const lead = g === 'p' ? 'Chủ nhiệm' : 'Tác giả chính';
+            const users = username ? [username] : pplLastAccs.slice();
+            const label = PPL_METRICS.find(m => m[0] === g && m[1] === k)[2] + (k === 'n' ? '' : ' (' + (g === 'p' ? 'đề tài' : 'bài báo') + ')');
+            const acc = username && pplAcc(username);
+            openSubList(label + ' · ' + (acc ? toNameCase(acc.fullName) : users.length + ' tài khoản'),
+                i => users.includes(i.owner.username) && i.kind === kind && (k === 'n' || (k === 'lead' ? ownerRoles(i).includes(lead) : facetStatState(i) === k)));
         }
 
         function openPeople(usernames, fromClick) {
@@ -3221,6 +3452,7 @@
             PPL_METRICS.forEach(([g, k]) => { total[g + k] = accs.reduce((n, a) => n + stats[a.username][g][k], 0); });
             const max = {};
             PPL_METRICS.forEach(([g, k]) => { max[g + k] = Math.max(0, ...accs.map(a => stats[a.username][g][k])); });
+            pplLastAccs = accs.map(a => a.username);
             const rows = accs.map((a, i) => {
                 const on = pplSel.includes(a.username);
                 return `<tr class="hover:bg-slate-50/80">
@@ -3228,17 +3460,17 @@
                     <td class="py-2.5 px-3 min-w-[160px]"><button type="button" onclick="openPeople(['${nrtEscape(a.username)}'])" class="font-semibold text-slate-800 hover:text-blue-700 hover:underline text-left">${nrtEscape(toNameCase(a.fullName))}</button>
                         <div class="text-xs text-slate-500">${nrtEscape(getDepartment(a))}</div></td>
                     <td class="py-2.5 px-2.5 text-slate-600 whitespace-nowrap text-sm">${nrtEscape((getUserData(a).profile || {}).degree || '-')}</td>
-                    ${PPL_METRICS.map(([g, k, , cls]) => { const n = stats[a.username][g][k]; const top = accs.length > 1 && n && n === max[g + k]; return `<td class="py-2.5 px-2.5 text-center ${n ? cls : 'text-slate-300'} ${k === 'n' ? 'font-bold' : 'font-medium'} ${top ? 'bg-amber-50' : ''}">${n}</td>`; }).join('')}
+                    ${PPL_METRICS.map(([g, k, , cls]) => { const n = stats[a.username][g][k]; const top = accs.length > 1 && n && n === max[g + k]; return `<td class="py-2.5 px-2.5 text-center ${n ? cls : 'text-slate-300'} ${k === 'n' ? 'font-bold' : 'font-medium'} ${top ? 'bg-amber-50' : ''}">${pplStatBtn(n, a.username, g, k)}</td>`; }).join('')}
                 </tr>`;
             }).join('');
             return `<div class="overflow-x-auto hdr-scroll"><table class="freeze-2 w-full text-left border-collapse text-sm">
                 <thead class="text-xs uppercase tracking-wider text-slate-500">
-                    <tr class="bg-slate-50"><th rowspan="2" class="py-2 px-2.5 text-center">Chọn</th><th rowspan="2" class="py-2 px-3">Họ và tên</th><th rowspan="2" class="py-2 px-2.5">Học vị</th>
+                    <tr class="bg-slate-50"><th rowspan="2" class="py-2 px-2.5 text-center">Chọn</th><th rowspan="2" class="py-2 px-3"><div class="flex items-center justify-between gap-1"><span>Họ và tên</span><span class="flex items-center">${pplColBtn('qname', 'Tìm họ tên')}${pplColBtn('quser', 'Tìm tên đăng nhập (tài khoản)', 'fa-at')}${pplColBtn('qdept', 'Tìm khoa / phòng', 'fa-hospital')}</span></div></th><th rowspan="2" class="py-2 px-2.5 whitespace-nowrap"><div class="flex items-center justify-between gap-1"><span>Học vị</span>${pplColBtn('qdegree', 'Tìm học vị')}</div></th>
                         <th colspan="7" class="py-2 px-2.5 text-center text-blue-700 border-l border-slate-200">Đề tài nghiên cứu</th><th colspan="7" class="py-2 px-2.5 text-center text-indigo-700 border-l border-slate-200">Bài báo khoa học</th></tr>
                     <tr class="bg-slate-50">${head2}</tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">${rows}</tbody>
-                ${accs.length > 1 ? `<tfoot><tr class="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-200"><td></td><td class="py-2.5 px-3">Tổng cộng (${accs.length})</td><td></td>${PPL_METRICS.map(([g, k]) => `<td class="py-2.5 px-2.5 text-center">${total[g + k]}</td>`).join('')}</tr></tfoot>` : ''}
+                <tbody class="divide-y divide-slate-100">${rows || '<tr><td colspan="17" class="py-6 text-center text-slate-400">Không có tài khoản nào phù hợp.</td></tr>'}</tbody>
+                ${accs.length > 1 ? `<tfoot><tr class="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-200"><td></td><td class="py-2.5 px-3">Tổng cộng (${accs.length})</td><td></td>${PPL_METRICS.map(([g, k]) => `<td class="py-2.5 px-2.5 text-center">${pplStatBtn(total[g + k], '', g, k)}</td>`).join('')}</tr></tfoot>` : ''}
             </table></div>
             ${accs.length > 1 ? '<p class="px-4 py-2 text-xs text-slate-500"><span class="inline-block w-3 h-3 rounded bg-amber-50 border border-amber-200 align-middle mr-1"></span>Ô tô vàng: cao nhất trong các tài khoản đang so sánh.</p>' : ''}`;
         }
@@ -3276,9 +3508,11 @@
             // Xem một tài khoản: ẩn dòng mô tả và khung chọn, mũi tên quay lại nằm trong thẻ hồ sơ
             // Đang xem một tài khoản (bấm tên hoặc chọn một người): luôn ẩn khung chọn, quay lại bằng mũi tên trong thẻ hồ sơ
             const single = pplSel.length === 1 && pplFocus;
+            const deptListView = pplDeptList && !pplDept.length && !pplSel.length;
             document.getElementById('pplBackBtn').classList.add('hidden');
-            document.getElementById('pplIntro').classList.toggle('hidden', single);
-            document.getElementById('pplPickCard').classList.toggle('hidden', single);
+            document.getElementById('pplIntro').classList.toggle('hidden', single || deptListView);
+            document.getElementById('pplPickCard').classList.toggle('hidden', single || deptListView);
+            if (deptListView) { box.innerHTML = pplDeptListHtml(); return; }
             pplSel = pplSel.filter(u => pplAcc(u));
             renderPplTags('dept');
             renderPplTags('acc');
@@ -3307,7 +3541,8 @@
                             <button type="button" onclick="pplMakeReport()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold"><i class="fa-solid fa-print mr-1"></i>In báo cáo so sánh</button>
                         </div>
                     </div>
-                    ${accs.length ? (pplView === 'cols' ? pplCompareCols(accs, stats) : pplCompareTable(accs, stats)) : '<p class="p-6 text-center text-slate-400 text-sm">Không có tài khoản nào.</p>'}
+                    ${pplColChips()}
+                    ${pplView !== 'cols' && (accs.length || nrtGetAccounts().length) ? pplCompareTable(accs, stats) : accs.length ? pplCompareCols(accs, stats) : '<p class="p-6 text-center text-slate-400 text-sm">Không có tài khoản nào phù hợp.</p>'}
                     ${!pplSel.length && accs.length ? '<p class="px-4 sm:px-6 py-2.5 border-t border-slate-100 text-xs text-slate-500"><i class="fa-solid fa-circle-info text-blue-500 mr-1"></i>Bấm tên để xem tổng quan một tài khoản; đánh dấu ô Chọn (hoặc gõ ở ô Tài khoản) để so sánh nhiều tài khoản.</p>' : ''}
                 </div>`;
             let html;
@@ -3320,6 +3555,7 @@
                     </details>`).join('')}
                 </div>`;
             else html = compare;
+            if (!single && pplDept.length) html = pplDeptCardHtml(all) + html;
             box.innerHTML = html;
         }
 
@@ -3529,7 +3765,7 @@
             const parts = FACETS.filter(f => facetShown(f, scope) && (facetSel[f.key] || []).length)
                 .map(f => facetLabel(f, scope).split(' (')[0] + ': ' + facetSel[f.key].map(v => facetText(f, v)).join(', '));
             Object.entries((kind && mColFilter[kind]) || {}).filter(([, v]) => v && v !== 'all').forEach(([f, v]) =>
-                parts.push(isContains(v) || isRange(v) ? pickText(M_COLS[f][0], v) : M_COLS[f][0] + ': ' + v));
+                parts.push(isContains(v) || isRange(v) || isMulti(v) ? pickText(M_COLS[f][0], v) : M_COLS[f][0] + ': ' + v));
             return parts.join(' · ');
         }
         function facetFilterCaption(kind) {
@@ -3638,8 +3874,10 @@
             const list = mColItems[kind].filter(mColMatch(kind));
             const total = items.filter(i => i.kind === kind).length;
             // Các ô lọc cột đang dùng: hiện thành nhãn, bấm × để bỏ
-            const colChips = Object.entries(mColFilter[kind]).filter(([, v]) => v && v !== 'all').map(([f, v]) =>
-                `<span class="inline-flex items-center gap-2 text-xs font-semibold ${art ? 'bg-indigo-600' : 'bg-blue-600'} text-white rounded-full pl-3 pr-1 py-1 max-w-full normal-case tracking-normal"><span class="truncate">${nrtEscape(isContains(v) || isRange(v) ? pickText(M_COLS[f][0], v) : M_COLS[f][0] + ': ' + v)}</span><button type="button" onclick="clearMCol('${kind}', '${f}')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`);
+            // Mỗi giá trị đang lọc một nhãn nhỏ (kính lúp chọn được nhiều giá trị); ô ngày một nhãn
+            const colChips = Object.entries(mColFilter[kind]).filter(([, v]) => v && v !== 'all').flatMap(([f, v]) => isRange(v)
+                ? [`<span class="shrink-0 inline-flex items-center gap-2 text-xs font-semibold ${art ? 'bg-indigo-600' : 'bg-blue-600'} text-white rounded-full pl-3 pr-1 py-1 max-w-[16rem] normal-case tracking-normal"><span class="truncate">${nrtEscape(pickText(M_COLS[f][0], v))}</span><button type="button" onclick="clearMCol('${kind}', '${f}')" title="Bỏ lọc" class="shrink-0 w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>`]
+                : [multiChipsHtml(multiParts(v).map(p => ['m_' + kind + '_' + f, isContains(p) ? pickText(M_COLS[f][0], p) : M_COLS[f][0] + ': ' + p, p]))]);
             const chip = key !== 'all' ? `<span class="inline-flex items-center gap-2 text-xs font-semibold ${art ? 'bg-indigo-600' : 'bg-blue-600'} text-white rounded-full pl-3 pr-1 py-1 normal-case tracking-normal">Đang lọc: ${tile[1]}<button type="button" onclick="setMonitorFilter('${kind}', 'all')" title="Bỏ lọc" class="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><i class="fa-solid fa-xmark text-[10px]"></i></button></span>` : '';
             return `<div id="monitorBlock_${kind}" class="space-y-4 scroll-mt-40"><div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="px-6 py-4 flex flex-wrap items-center justify-between gap-2">
@@ -3651,7 +3889,7 @@
                 <div class="facet-slot no-print"></div>
                 <div class="result-slot no-print"></div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                ${colChips.length ? `<div class="px-6 py-2.5 border-b border-slate-100 flex flex-wrap items-center gap-1.5 no-print">${colChips.join('')}${colChips.length > 1 ? `<button type="button" onclick="clearMCol('${kind}')" class="text-xs font-semibold text-rose-600 hover:underline ml-1">Bỏ lọc cột</button>` : ''}</div>` : ''}
+                ${colChips.length ? `<div class="px-6 py-2.5 border-b border-slate-100 flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar no-print"><span class="shrink-0 text-xs font-semibold text-slate-500">Đang tìm:</span>${colChips.join('')}${colChips.length > 1 || (colChips.join('').match(/data-v=/g) || []).length > 1 ? `<button type="button" onclick="clearMCol('${kind}')" class="shrink-0 text-xs font-semibold text-rose-600 hover:underline ml-1">Bỏ hết</button>` : ''}</div>` : ''}
                 ${monitorItemTable(kind, list, showOwner)}
             </div></div>`;
         }
